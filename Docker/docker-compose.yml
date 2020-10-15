@@ -1,0 +1,55 @@
+version: '3.5'
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    hostname: postgresql
+    restart: unless-stopped
+    volumes:
+      - ../Data/postgresql:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "huginn"
+      POSTGRES_PASSWORD: "password" # CHANGEME
+      POSTGRES_DB: "huginn"
+  huginn:
+    image: huginn/huginn
+    container_name: huginn
+    hostname: huginn
+    restart: unless-stopped
+    depends_on:
+      - postgresql
+    environment:
+      # DO_NOT_SEED: "true" # Uncomment me after the first deployment
+      FORCE_SSL: "true"
+      DO_NOT_CREATE_DATABASE: "true"
+      SKIP_INVITATION_CODE: "true"
+      DATABASE_ADAPTER: "postgresql"
+      DATABASE_HOST: "postgresql"
+      DATABASE_PORT: "5432"
+      HUGINN_DATABASE_NAME: "huginn"
+      HUGINN_DATABASE_USERNAME: "huginn"
+      HUGINN_DATABASE_PASSWORD: "password" # CHANGEME
+      # Email Configuration
+      EMAIL_FROM_ADDRESS: "huginn@example.com" # CHANGEME
+      SMTP_DOMAIN: "example.com" # CHANGEME
+      SMTP_USER_NAME: "huginn" # CHANGEME
+      SMTP_PASSWORD: "password" # CHANGEME
+      SMTP_SERVER: "mail.example.com" # CHANGEME
+      SMTP_PORT: "25" # CHANGEME
+      SMTP_AUTHENTICATION: "plain" # CHANGEME
+      SMTP_ENABLE_STARTTLS_AUTO: "true" # CHANGEME
+      SMTP_SSL: "false" # CHANGEME
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    container_name: nginx
+    hostname: nginx
+    depends_on:
+      - huginn
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../Config/nginx.conf:/etc/nginx/nginx.conf
+      - ../Data/nginx:/etc/ssl/private
+
