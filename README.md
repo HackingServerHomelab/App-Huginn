@@ -3,15 +3,13 @@
 ## First Time Prerequisites
 
 1. `rm ./Data/postgresql/.gitkeep`
+2. Run [Traefik](https://github.com/mattlombana/App-Traefik)
 
 ## Running the Containers
 
-1. Run `./Config/gen_certs.sh` to generate the SSL certificates (alternatively,
-   add custom certs to the private folder)
-2. Update the `server_name` in [nginx.conf](./Config/nginx.conf)
-3. Update the following mounts in [docker-compose.yml](./Docker/docker-compose.yml)
+1. Update the following mounts in [docker-compose.yml](./Docker/docker-compose.yml)
     * `../Data/postgresql:/var/lib/postgresql/data`
-4. Update the following environment variables in [docker-compose.yml](./Docker/docker-compose.yml)
+2. Update the following environment variables in [docker-compose.yml](./Docker/docker-compose.yml)
     * `POSTGRES_PASSWORD: "password" # CHANGEME`
     * `HUGINN_DATABASE_PASSWORD: "password" # CHANGEME`
     * `EMAIL_FROM_ADDRESS: "huginn@example.com" # CHANGEME`
@@ -23,7 +21,9 @@
     * `SMTP_AUTHENTICATION: "plain" # CHANGEME`
     * `SMTP_ENABLE_STARTTLS_AUTO: "true" # CHANGEME`
     * `SMTP_SSL: "false" # CHANGEME`
-3. Run `docker-compose -f ./Docker/docker-compose.yml up -d`
+3. Update the Traefik host label in [docker-compose.yml](./Docker/docker-compose.yml)
+    * ``"traefik.http.routers.huginn.rule=Host(`localhost`)"``
+4. Run `docker-compose -f ./Docker/docker-compose.yml up -d`
 
 ## First Time Setup
 
